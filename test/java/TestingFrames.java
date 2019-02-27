@@ -45,10 +45,8 @@ public class TestingFrames {
 
 	@DataProvider(name = "list")
 	public Object[][] getDataFromDataprovider() {
-		return new Object[][] { { 0, "frame-left", "LEFT" },
-								{ 0, "frame-middle", "MIDDLE" },
-								{ 0, "frame-right", "RIGHT" },
-							};
+		return new Object[][] { { 0, "frame-left", "LEFT" }, { 0, "frame-middle", "MIDDLE" },
+				{ 0, "frame-right", "RIGHT" }, };
 
 	}
 
@@ -58,13 +56,11 @@ public class TestingFrames {
 		driver.switchTo().frame(childFrameName);
 		assertEquals(driver.findElement(By.cssSelector("body")).getText(), expectedText);
 	}
-	
+
 	@Test
 	public void testingFrames() {
 		driver.switchTo().frame(1);
 		assertEquals(driver.findElement(By.cssSelector("body")).getText(), "BOTTOM");
 	}
-	
-	
 
 }

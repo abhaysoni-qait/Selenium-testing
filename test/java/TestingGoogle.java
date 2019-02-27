@@ -1,4 +1,7 @@
 import org.testng.annotations.Test;
+
+import com.webapp.automation.HandlePropFile;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import static org.testng.Assert.assertEquals;
@@ -19,11 +22,15 @@ import org.testng.annotations.Test;
 public class TestingGoogle {
 
 	private WebDriver driver;
-	private String testingOnWebsite = "http://www.google.com";
-	private String websiteName = "Google";
-	private String searchQuery = "QA infotech";
-	private String titleConstant = " - Google Search";
-	private String expectedTopUrl = "https://qainfotech.com/";
+	private String testingOnWebsite = HandlePropFile.getProperty("testingOnWebsite");
+	private String websiteName = HandlePropFile.getProperty("websiteName");
+	private String searchQuery = HandlePropFile.getProperty("searchQuery");
+	private String titleConstant = HandlePropFile.getProperty("titleConstant");
+	private String expectedTopUrl = HandlePropFile.getProperty("expectedTopUrl");
+	private String searchBarCssSelector = HandlePropFile.getProperty("searchBarCssSelector");
+	private String primarySearchButton = HandlePropFile.getProperty("primarySearchButton");
+	private String secondarySearchButton = HandlePropFile.getProperty("secondarySearchButton");
+	private String topUrlXpath = HandlePropFile.getProperty("topUrlXpath");
 	private WebElement searchBar;
 	private ArrayList<WebElement> searchButtons;
 
@@ -61,7 +68,7 @@ public class TestingGoogle {
 	public void isSearchBarPresent() {
 		boolean isSearchBarPresent = false;
 		try {
-			searchBar = driver.findElement(By.cssSelector("input[name=\"q\"]"));
+			searchBar = driver.findElement(By.cssSelector(searchBarCssSelector));
 			isSearchBarPresent = true;
 		} catch (NoSuchElementException e) {
 			isSearchBarPresent = false;
@@ -74,15 +81,12 @@ public class TestingGoogle {
 	
 	@Test(dependsOnMethods = { "isSearchButtonPresent" })
 	public void isSearchBoxTypeable() {
-//		String searchQuery = null;
 		searchBar.sendKeys(searchQuery);
 		// getting value of an html input element
-//		searchQuery = searchBar.getAttribute("value");
 		// matching, sended value to value right now in search bar
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		assertEquals(searchBar.getAttribute("value"), searchQuery);
@@ -93,15 +97,13 @@ public class TestingGoogle {
 	public void isSearchButtonPresent() {
 		boolean isSearchButtonPresent = false;
 		searchButtons = new ArrayList<WebElement>();
-		
+	
 		try {
-			
+			System.out.println(secondarySearchButton);
 			searchButtons
-			.add(driver.findElement(By.cssSelector(".FPdoLc.VlcLAe input[type='submit'][name='btnK']")));
+			.add(driver.findElement(By.cssSelector(primarySearchButton)));
 			searchButtons
-			.add(driver.findElement(By.cssSelector(".aajZCb input[type='submit'][name='btnK']")));
-//			System.out.println(searchButtons.size());
-//			System.out.println(searchButtons);
+			.add(driver.findElement(By.cssSelector(secondarySearchButton)));
 			isSearchButtonPresent = true;
 		} catch (NoSuchElementException e) {
 			System.out.println("Search Button Not found");
@@ -113,9 +115,6 @@ public class TestingGoogle {
 		} catch(IllegalMonitorStateException e) {
 			System.out.println(e.getMessage());
 		}
-//		catch(InterruptedException e) {
-//			System.out.println(e.getMessage());
-//		}
 		assertEquals(isSearchButtonPresent, true);
 	}
 
@@ -144,7 +143,6 @@ public class TestingGoogle {
 				status = true;
 			}
 		} catch (Exception e) {
-//			status = false;
 			System.out.println(e.getMessage());
 		}
 		
@@ -158,12 +156,10 @@ public class TestingGoogle {
 		assertEquals(actualTitle, searchQuery+titleConstant);
 	}
 	
-	//*[@id="rso"]/div/div/div[1]/div/div/div[1]/a/div/cite
-	
-	@Test(dependsOnMethods = {"checkingTitleAfterSearch"})
+	@Test(dependsOnMethods = {"checkingTitleAfterSearch"}, alwaysRun=true)
 //	this methods checks if the top url is what we expect or not
 	public void checkingTopResultOfPage() {
-		String topUrl = driver.findElement(By.xpath("//*[@id=\"rso\"]/div/div/div[1]/div/div/div[1]/a/div/cite")).getText();
+		String topUrl = driver.findElement(By.xpath(topUrlXpath)).getText();
 		assertEquals(topUrl, expectedTopUrl);
 	}
 
